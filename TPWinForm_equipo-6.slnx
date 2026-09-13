@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Dominio/Dominio.csproj" />
+  <Project Path="TPWinForm_equipo-6.csproj" />
+</Solution>
