@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Dominio
 {
-    internal class Imagen
+    public class Imagen
     {
         public int Id { get; set; }
         public int IdArticulo { get; set; }
@@ -16,3 +16,4 @@ namespace Dominio
 
     }
 }
+
