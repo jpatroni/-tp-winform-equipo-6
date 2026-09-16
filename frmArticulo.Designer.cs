@@ -10,107 +10,186 @@ namespace TPWinForm_equipo_6
         }
         private void InitializeComponent()
         {
-            SuspendLayout();
             lblCodigo = new Label();
             txtCodigo = new TextBox();
-            lblCodigo.Text = "Código";
-            lblCodigo.Location = new Point(24, 24);
-            lblCodigo.AutoSize = true;
-            txtCodigo.Name = "txtCodigo";
-            txtCodigo.Location = new Point(130, 24);
-            txtCodigo.Size = new Size(310, 23);
-            txtCodigo.TabIndex = 0;
-            Controls.Add(lblCodigo);
-            Controls.Add(txtCodigo);
             lblNombre = new Label();
             txtNombre = new TextBox();
-            lblNombre.Text = "Nombre";
-            lblNombre.Location = new Point(24, 68);
-            lblNombre.AutoSize = true;
-            txtNombre.Name = "txtNombre";
-            txtNombre.Location = new Point(130, 68);
-            txtNombre.Size = new Size(310, 23);
-            txtNombre.TabIndex = 1;
-            Controls.Add(lblNombre);
-            Controls.Add(txtNombre);
             lblDescripcion = new Label();
             txtDescripcion = new TextBox();
-            lblDescripcion.Text = "Descripción";
-            lblDescripcion.Location = new Point(24, 112);
-            lblDescripcion.AutoSize = true;
-            txtDescripcion.Name = "txtDescripcion";
-            txtDescripcion.Location = new Point(130, 112);
-            txtDescripcion.Size = new Size(310, 23);
-            txtDescripcion.TabIndex = 2;
-            txtDescripcion.Multiline = true;
-            txtDescripcion.Height = 70;
-            Controls.Add(lblDescripcion);
-            Controls.Add(txtDescripcion);
             lblPrecio = new Label();
             nudPrecio = new NumericUpDown();
-            lblPrecio.Text = "Precio";
-            lblPrecio.Location = new Point(24, 204);
-            lblPrecio.AutoSize = true;
-            nudPrecio.Name = "nudPrecio";
-            nudPrecio.Location = new Point(130, 204);
-            nudPrecio.Size = new Size(310, 23);
-            nudPrecio.TabIndex = 3;
-            nudPrecio.DecimalPlaces = 2;
-            nudPrecio.Maximum = 100000000;
-            nudPrecio.ThousandsSeparator = true;
-            Controls.Add(lblPrecio);
-            Controls.Add(nudPrecio);
             lblMarca = new Label();
             cboMarca = new ComboBox();
-            lblMarca.Text = "Marca";
-            lblMarca.Location = new Point(24, 248);
-            lblMarca.AutoSize = true;
-            cboMarca.Name = "cboMarca";
-            cboMarca.Location = new Point(130, 248);
-            cboMarca.Size = new Size(310, 23);
-            cboMarca.TabIndex = 4;
-            cboMarca.DropDownStyle = ComboBoxStyle.DropDownList;
-            Controls.Add(lblMarca);
-            Controls.Add(cboMarca);
             lblCategoria = new Label();
             cboCategoria = new ComboBox();
-            lblCategoria.Text = "Categoría";
-            lblCategoria.Location = new Point(24, 292);
+            btnGuardar = new Button();
+            btnCancelar = new Button();
+            ((System.ComponentModel.ISupportInitialize)nudPrecio).BeginInit();
+            SuspendLayout();
+            // 
+            // lblCodigo
+            // 
+            lblCodigo.AutoSize = true;
+            lblCodigo.Location = new Point(34, 40);
+            lblCodigo.Margin = new Padding(4, 0, 4, 0);
+            lblCodigo.Name = "lblCodigo";
+            lblCodigo.Size = new Size(71, 25);
+            lblCodigo.TabIndex = 0;
+            lblCodigo.Text = "Código";
+            // 
+            // txtCodigo
+            // 
+            txtCodigo.Location = new Point(186, 40);
+            txtCodigo.Margin = new Padding(4, 5, 4, 5);
+            txtCodigo.Name = "txtCodigo";
+            txtCodigo.Size = new Size(441, 31);
+            txtCodigo.TabIndex = 0;
+            // 
+            // lblNombre
+            // 
+            lblNombre.AutoSize = true;
+            lblNombre.Location = new Point(34, 113);
+            lblNombre.Margin = new Padding(4, 0, 4, 0);
+            lblNombre.Name = "lblNombre";
+            lblNombre.Size = new Size(78, 25);
+            lblNombre.TabIndex = 1;
+            lblNombre.Text = "Nombre";
+            // 
+            // txtNombre
+            // 
+            txtNombre.Location = new Point(186, 113);
+            txtNombre.Margin = new Padding(4, 5, 4, 5);
+            txtNombre.Name = "txtNombre";
+            txtNombre.Size = new Size(441, 31);
+            txtNombre.TabIndex = 1;
+            // 
+            // lblDescripcion
+            // 
+            lblDescripcion.AutoSize = true;
+            lblDescripcion.Location = new Point(34, 187);
+            lblDescripcion.Margin = new Padding(4, 0, 4, 0);
+            lblDescripcion.Name = "lblDescripcion";
+            lblDescripcion.Size = new Size(104, 25);
+            lblDescripcion.TabIndex = 2;
+            lblDescripcion.Text = "Descripción";
+            // 
+            // txtDescripcion
+            // 
+            txtDescripcion.Location = new Point(186, 187);
+            txtDescripcion.Margin = new Padding(4, 5, 4, 5);
+            txtDescripcion.Multiline = true;
+            txtDescripcion.Name = "txtDescripcion";
+            txtDescripcion.Size = new Size(441, 114);
+            txtDescripcion.TabIndex = 2;
+            // 
+            // lblPrecio
+            // 
+            lblPrecio.AutoSize = true;
+            lblPrecio.Location = new Point(34, 340);
+            lblPrecio.Margin = new Padding(4, 0, 4, 0);
+            lblPrecio.Name = "lblPrecio";
+            lblPrecio.Size = new Size(60, 25);
+            lblPrecio.TabIndex = 3;
+            lblPrecio.Text = "Precio";
+            // 
+            // nudPrecio
+            // 
+            nudPrecio.DecimalPlaces = 2;
+            nudPrecio.Location = new Point(186, 340);
+            nudPrecio.Margin = new Padding(4, 5, 4, 5);
+            nudPrecio.Maximum = new decimal(new int[] { 100000000, 0, 0, 0 });
+            nudPrecio.Name = "nudPrecio";
+            nudPrecio.Size = new Size(443, 31);
+            nudPrecio.TabIndex = 3;
+            nudPrecio.ThousandsSeparator = true;
+            // 
+            // lblMarca
+            // 
+            lblMarca.AutoSize = true;
+            lblMarca.Location = new Point(34, 413);
+            lblMarca.Margin = new Padding(4, 0, 4, 0);
+            lblMarca.Name = "lblMarca";
+            lblMarca.Size = new Size(60, 25);
+            lblMarca.TabIndex = 4;
+            lblMarca.Text = "Marca";
+            // 
+            // cboMarca
+            // 
+            cboMarca.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboMarca.Location = new Point(186, 413);
+            cboMarca.Margin = new Padding(4, 5, 4, 5);
+            cboMarca.Name = "cboMarca";
+            cboMarca.Size = new Size(441, 33);
+            cboMarca.TabIndex = 4;
+            cboMarca.SelectedIndexChanged += cboMarca_SelectedIndexChanged;
+            // 
+            // lblCategoria
+            // 
             lblCategoria.AutoSize = true;
-            cboCategoria.Name = "cboCategoria";
-            cboCategoria.Location = new Point(130, 292);
-            cboCategoria.Size = new Size(310, 23);
-            cboCategoria.TabIndex = 5;
+            lblCategoria.Location = new Point(34, 487);
+            lblCategoria.Margin = new Padding(4, 0, 4, 0);
+            lblCategoria.Name = "lblCategoria";
+            lblCategoria.Size = new Size(88, 25);
+            lblCategoria.TabIndex = 5;
+            lblCategoria.Text = "Categoría";
+            // 
+            // cboCategoria
+            // 
             cboCategoria.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboCategoria.Location = new Point(186, 487);
+            cboCategoria.Margin = new Padding(4, 5, 4, 5);
+            cboCategoria.Name = "cboCategoria";
+            cboCategoria.Size = new Size(441, 33);
+            cboCategoria.TabIndex = 5;
+            // 
+            // btnGuardar
+            // 
+            btnGuardar.Enabled = false;
+            btnGuardar.Location = new Point(343, 583);
+            btnGuardar.Margin = new Padding(4, 5, 4, 5);
+            btnGuardar.Name = "btnGuardar";
+            btnGuardar.Size = new Size(136, 50);
+            btnGuardar.TabIndex = 6;
+            btnGuardar.Text = "Guardar";
+            // 
+            // btnCancelar
+            // 
+            btnCancelar.DialogResult = DialogResult.Cancel;
+            btnCancelar.Location = new Point(493, 583);
+            btnCancelar.Margin = new Padding(4, 5, 4, 5);
+            btnCancelar.Name = "btnCancelar";
+            btnCancelar.Size = new Size(136, 50);
+            btnCancelar.TabIndex = 7;
+            btnCancelar.Text = "Cancelar";
+            // 
+            // frmArticulo
+            // 
+            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = btnCancelar;
+            ClientSize = new Size(671, 675);
+            Controls.Add(lblCodigo);
+            Controls.Add(txtCodigo);
+            Controls.Add(lblNombre);
+            Controls.Add(txtNombre);
+            Controls.Add(lblDescripcion);
+            Controls.Add(txtDescripcion);
+            Controls.Add(lblPrecio);
+            Controls.Add(nudPrecio);
+            Controls.Add(lblMarca);
+            Controls.Add(cboMarca);
             Controls.Add(lblCategoria);
             Controls.Add(cboCategoria);
-
-            btnGuardar = new Button();
-            btnGuardar.Name = "btnGuardar";
-            btnGuardar.Text = "Guardar";
-            btnGuardar.Location = new Point(240, 350);
-            btnGuardar.Size = new Size(95, 30);
-            btnGuardar.TabIndex = 6;
-            btnGuardar.Enabled = false;
-            btnCancelar = new Button();
-            btnCancelar.Name = "btnCancelar";
-            btnCancelar.Text = "Cancelar";
-            btnCancelar.Location = new Point(345, 350);
-            btnCancelar.Size = new Size(95, 30);
-            btnCancelar.TabIndex = 7;
-            btnCancelar.DialogResult = DialogResult.Cancel;
             Controls.Add(btnGuardar);
             Controls.Add(btnCancelar);
-            CancelButton = btnCancelar;
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(470, 405);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Margin = new Padding(4, 5, 4, 5);
             MaximizeBox = false;
             MinimizeBox = false;
-            StartPosition = FormStartPosition.CenterParent;
             Name = "frmArticulo";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "Agregar artículo";
+            ((System.ComponentModel.ISupportInitialize)nudPrecio).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
