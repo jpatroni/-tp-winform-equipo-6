@@ -43,6 +43,12 @@ namespace TPWinForm_equipo_6
                 HeaderText = titulo
             });
         }
+
+        private void btnAgregar_Click(object? sender, EventArgs e)
+        {
+            using var formulario = new frmArticulo();
+            formulario.ShowDialog(this);
+        }
     }
 }
 
