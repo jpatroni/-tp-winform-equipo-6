@@ -49,6 +49,7 @@
             btnModificar.Text = "Modificar";
             btnModificar.Location = new Point(130, 350);
             btnVerDetalle.Text = "Ver detalle";
+            btnVerDetalle.Click += btnVerDetalle_Click;
             btnVerDetalle.Location = new Point(236, 350);
             btnEliminar.Text = "Eliminar";
             btnEliminar.Location = new Point(342, 350);

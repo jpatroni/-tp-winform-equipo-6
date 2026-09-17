@@ -49,6 +49,28 @@ namespace TPWinForm_equipo_6
             using var formulario = new frmArticulo();
             formulario.ShowDialog(this);
         }
+
+        private void btnVerDetalle_Click(object? sender, EventArgs e)
+        {
+            if (dataGridView1.CurrentRow?.DataBoundItem is not Articulo seleccionado)
+            {
+                MessageBox.Show(this, "Seleccioná un artículo para ver su detalle.",
+                    "Ver detalle", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                using var formulario = new frmDetalleArticulo(seleccionado);
+                formulario.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.ToString());
+                MessageBox.Show(this, "No se pudo abrir el detalle del artículo.",
+                    "Ver detalle", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
 
