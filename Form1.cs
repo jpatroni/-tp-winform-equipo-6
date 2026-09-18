@@ -46,8 +46,13 @@ namespace TPWinForm_equipo_6
 
         private void btnAgregar_Click(object? sender, EventArgs e)
         {
-            using var formulario = new frmArticulo();
+            using var formulario = new frmArticuloAlta();
             formulario.ShowDialog(this);
+        }
+
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
