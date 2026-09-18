@@ -1,4 +1,5 @@
 using Dominio;
+using System.Data;
 
 namespace TPWinForm_equipo_6.Negocio
 {
@@ -59,5 +60,127 @@ namespace TPWinForm_equipo_6.Negocio
             }
             return articulos.Values.ToList();
         }
+        public void Agregar(Articulo nuevo)
+
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.SetearConsulta(@"
+                 INSERT INTO ARTICULOS
+                                  (Codigo, Nombre, Descripcion, IdMarca, IdCategoria, Precio)
+                                  VALUES
+                                  (@Codigo, @Nombre, @Descripcion, @IdMarca, @IdCategoria, @Precio);
+                 SELECT SCOPE_IDENTITY();
+                                 ");
+
+                datos.SetearParametro("@Codigo", SqlDbType.VarChar, nuevo.Codigo);
+                datos.SetearParametro("@Nombre", SqlDbType.VarChar, nuevo.Nombre);
+                datos.SetearParametro("@Descripcion", SqlDbType.VarChar, nuevo.Descripcion);
+                datos.SetearParametro("@IdMarca", SqlDbType.Int, nuevo.Marca.Id);
+                datos.SetearParametro("@IdCategoria", SqlDbType.Int, nuevo.Categoria.Id);
+                datos.SetearParametro("@Precio", SqlDbType.Money, nuevo.Precio);
+
+                //Obtiene el ID del artículo para relacionarlo con las imágenes. Sale del SCOPE IDENTITY
+                int idArticulo = Convert.ToInt32(datos.EjecutarEscalar());
+
+                if (nuevo.Imagenes != null && nuevo.Imagenes.Count > 0)
+                {
+                    foreach (Imagen imagen in nuevo.Imagenes)
+                    {
+                        AccesoDatos datosImagen = new AccesoDatos();
+                        datosImagen.SetearConsulta(@"
+
+                         INSERT INTO IMAGENES
+                         (IdArticulo, ImagenUrl)
+                         VALUES
+                         (@IdArticulo, @ImagenUrl)");
+
+                        datosImagen.SetearParametro("@IdArticulo", SqlDbType.Int, idArticulo);
+                        datosImagen.SetearParametro("@ImagenUrl", SqlDbType.VarChar, imagen.IdImagen);
+                        datosImagen.EjecutarAccion();
+                    }
+                }
+            }
+
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+
+        public void Modificar(Articulo nuevo)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.SetearConsulta(@"
+            UPDATE ARTICULOS
+            SET Codigo = @Codigo,
+                Nombre = @Nombre,
+                Descripcion = @Descripcion,
+                IdMarca = @IdMarca,
+                IdCategoria = @IdCategoria,
+                Precio = @Precio
+            WHERE Id = @Id");
+
+                datos.SetearParametro("@Id", SqlDbType.Int, nuevo.Id);
+                datos.SetearParametro("@Codigo", SqlDbType.VarChar, nuevo.Codigo);
+                datos.SetearParametro("@Nombre", SqlDbType.VarChar, nuevo.Nombre);
+                datos.SetearParametro("@Descripcion", SqlDbType.VarChar, nuevo.Descripcion);
+                datos.SetearParametro("@IdMarca", SqlDbType.Int, nuevo.Marca.Id);
+                datos.SetearParametro("@IdCategoria", SqlDbType.Int, nuevo.Categoria.Id);
+                datos.SetearParametro("@Precio", SqlDbType.Decimal, nuevo.Precio);
+
+                datos.EjecutarAccion();
+
+                //Primero eliminamos las imágenes anteriores
+                AccesoDatos datosImagen = new AccesoDatos();
+
+                datosImagen.SetearConsulta(@"
+            DELETE FROM IMAGENES
+            WHERE IdArticulo = @IdArticulo");
+
+                datosImagen.SetearParametro("@IdArticulo", SqlDbType.Int, nuevo.Id);
+
+                datosImagen.EjecutarAccion();
+
+                //Después agregamos las imágenes nuevas
+                if (nuevo.Imagenes != null && nuevo.Imagenes.Count > 0)
+                {
+                    foreach (Imagen imagen in nuevo.Imagenes)
+                    {
+                        AccesoDatos datosNuevaImagen = new AccesoDatos();
+
+                        datosNuevaImagen.SetearConsulta(@"
+                    INSERT INTO IMAGENES
+                    (IdArticulo, ImagenUrl)
+                    VALUES
+                    (@IdArticulo, @ImagenUrl)");
+
+                        datosNuevaImagen.SetearParametro("@IdArticulo", SqlDbType.Int, nuevo.Id);
+                        datosNuevaImagen.SetearParametro("@ImagenUrl", SqlDbType.VarChar, imagen.IdImagen);
+
+                        datosNuevaImagen.EjecutarAccion();
+                    }
+                }
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
     }
 }
+
+

@@ -63,6 +63,20 @@ namespace TPWinForm_equipo_6.Negocio
             }
         }
 
+        public object EjecutarEscalar()
+        {
+            CerrarConexion();
+            try
+            {
+                conexion.Open();
+                return comando.ExecuteScalar();
+            }
+            finally 
+            {
+                CerrarConexion();
+            }
+        }
+
         public void CerrarConexion()
         {
             lector?.Dispose();
@@ -76,5 +90,7 @@ namespace TPWinForm_equipo_6.Negocio
             comando.Dispose();
             conexion.Dispose();
         }
+
+
     }
 }
