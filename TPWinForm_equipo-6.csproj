@@ -13,11 +13,11 @@
     <Compile Remove="Dominio\**\*.cs" />
     <EmbeddedResource Remove="Dominio\**\*" />
     <None Remove="Dominio\**\*" />
+    <Compile Remove="Negocio\**\*.cs" />
+    <EmbeddedResource Remove="Negocio\**\*" />
+    <None Remove="Negocio\**\*" />
     <ProjectReference Include="Dominio\Dominio.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.3" />
+    <ProjectReference Include="Negocio\Negocio.csproj" />
   </ItemGroup>
 
 </Project>

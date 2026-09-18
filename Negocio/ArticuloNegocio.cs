@@ -1,5 +1,4 @@
 using Dominio;
-using TPWinForm_equipo_6.Datos;
 
 namespace TPWinForm_equipo_6.Negocio
 {

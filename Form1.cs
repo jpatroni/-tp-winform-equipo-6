@@ -52,7 +52,7 @@ namespace TPWinForm_equipo_6
 
         private void btnVerDetalle_Click(object? sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow?.DataBoundItem is not Articulo seleccionado)
+            if (dataGridView1.CurrentRow == null || dataGridView1.CurrentRow.DataBoundItem == null)
             {
                 MessageBox.Show(this, "Seleccioná un artículo para ver su detalle.",
                     "Ver detalle", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -61,8 +61,11 @@ namespace TPWinForm_equipo_6
 
             try
             {
-                using var formulario = new frmDetalleArticulo(seleccionado);
-                formulario.ShowDialog(this);
+                Articulo seleccionado = (Articulo)dataGridView1.CurrentRow.DataBoundItem;
+                using (frmDetalleArticulo formulario = new frmDetalleArticulo(seleccionado))
+                {
+                    formulario.ShowDialog(this);
+                }
             }
             catch (Exception ex)
             {

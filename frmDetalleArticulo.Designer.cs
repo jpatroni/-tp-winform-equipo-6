@@ -1,5 +1,4 @@
 #nullable enable
-
 namespace TPWinForm_equipo_6
 {
     partial class frmDetalleArticulo
@@ -16,6 +15,13 @@ namespace TPWinForm_equipo_6
         private Label lblEstadoImagen = null!;
         private Button btnAnterior = null!;
         private Button btnSiguiente = null!;
+        private Button btnCerrar = null!;
+        private Label lblCodigo = null!;
+        private Label lblNombre = null!;
+        private Label lblDescripcion = null!;
+        private Label lblMarca = null!;
+        private Label lblCategoria = null!;
+        private Label lblPrecio = null!;
 
         protected override void Dispose(bool disposing)
         {
@@ -41,76 +47,136 @@ namespace TPWinForm_equipo_6
             lblEstadoImagen = new Label();
             btnAnterior = new Button();
             btnSiguiente = new Button();
+            btnCerrar = new Button();
+            lblCodigo = new Label();
+            lblNombre = new Label();
+            lblDescripcion = new Label();
+            lblMarca = new Label();
+            lblCategoria = new Label();
+            lblPrecio = new Label();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxArticulo).BeginInit();
             SuspendLayout();
-
-            var contenido = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill, Padding = new Padding(20), ColumnCount = 2, RowCount = 1
-            };
-            contenido.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            contenido.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            contenido.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-
-            var datos = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 12, Padding = new Padding(0, 0, 15, 0) };
-            string[] titulos = { "Código", "Nombre", "Descripción", "Marca", "Categoría", "Precio" };
-            TextBox[] campos = { txtCodigo, txtNombre, txtDescripcion, txtMarca, txtCategoria, txtPrecio };
-            for (int i = 0; i < campos.Length; i++)
-            {
-                datos.RowStyles.Add(new RowStyle(SizeType.Absolute, 25));
-                datos.RowStyles.Add(i == 2
-                    ? new RowStyle(SizeType.Percent, 100)
-                    : new RowStyle(SizeType.Absolute, 36));
-                datos.Controls.Add(new Label { Text = titulos[i], AutoSize = true, Anchor = AnchorStyles.Left }, 0, i * 2);
-                campos[i].ReadOnly = true;
-                campos[i].Dock = DockStyle.Fill;
-                datos.Controls.Add(campos[i], 0, i * 2 + 1);
-            }
+            lblCodigo.Name = "lblCodigo";
+            txtCodigo.Name = "txtCodigo";
+            lblCodigo.Text = "Código";
+            lblCodigo.AutoSize = true;
+            lblCodigo.Location = new Point(24, 20);
+            txtCodigo.Location = new Point(24, 44);
+            txtCodigo.Size = new Size(350, 23);
+            txtCodigo.ReadOnly = true;
+            txtCodigo.TabIndex = 0;
+            lblNombre.Name = "lblNombre";
+            txtNombre.Name = "txtNombre";
+            lblNombre.Text = "Nombre";
+            lblNombre.AutoSize = true;
+            lblNombre.Location = new Point(24, 85);
+            txtNombre.Location = new Point(24, 109);
+            txtNombre.Size = new Size(350, 23);
+            txtNombre.ReadOnly = true;
+            txtNombre.TabIndex = 1;
+            lblDescripcion.Name = "lblDescripcion";
+            txtDescripcion.Name = "txtDescripcion";
+            lblDescripcion.Text = "Descripción";
+            lblDescripcion.AutoSize = true;
+            lblDescripcion.Location = new Point(24, 150);
+            txtDescripcion.Location = new Point(24, 174);
+            txtDescripcion.Size = new Size(350, 112);
+            txtDescripcion.ReadOnly = true;
+            txtDescripcion.TabIndex = 2;
+            lblMarca.Name = "lblMarca";
+            txtMarca.Name = "txtMarca";
+            lblMarca.Text = "Marca";
+            lblMarca.AutoSize = true;
+            lblMarca.Location = new Point(24, 300);
+            txtMarca.Location = new Point(24, 324);
+            txtMarca.Size = new Size(350, 23);
+            txtMarca.ReadOnly = true;
+            txtMarca.TabIndex = 3;
+            lblCategoria.Name = "lblCategoria";
+            txtCategoria.Name = "txtCategoria";
+            lblCategoria.Text = "Categoría";
+            lblCategoria.AutoSize = true;
+            lblCategoria.Location = new Point(24, 365);
+            txtCategoria.Location = new Point(24, 389);
+            txtCategoria.Size = new Size(350, 23);
+            txtCategoria.ReadOnly = true;
+            txtCategoria.TabIndex = 4;
+            lblPrecio.Name = "lblPrecio";
+            txtPrecio.Name = "txtPrecio";
+            lblPrecio.Text = "Precio";
+            lblPrecio.AutoSize = true;
+            lblPrecio.Location = new Point(24, 430);
+            txtPrecio.Location = new Point(24, 454);
+            txtPrecio.Size = new Size(350, 23);
+            txtPrecio.ReadOnly = true;
+            txtPrecio.TabIndex = 5;
             txtDescripcion.Multiline = true;
             txtDescripcion.ScrollBars = ScrollBars.Vertical;
-
-            var imagenes = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4 };
-            imagenes.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            imagenes.RowStyles.Add(new RowStyle(SizeType.Absolute, 55));
-            imagenes.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
-            imagenes.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-            pictureBoxArticulo.Dock = DockStyle.Fill;
+            pictureBoxArticulo.Name = "pictureBoxArticulo";
+            pictureBoxArticulo.Location = new Point(404, 24);
+            pictureBoxArticulo.Size = new Size(410, 340);
             pictureBoxArticulo.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxArticulo.BackColor = Color.WhiteSmoke;
-            lblEstadoImagen.Dock = DockStyle.Fill;
+            pictureBoxArticulo.InitialImage = null;
+            pictureBoxArticulo.ErrorImage = null;
+            pictureBoxArticulo.TabStop = false;
+            pictureBoxArticulo.LoadCompleted += pictureBoxArticulo_LoadCompleted;
+            lblEstadoImagen.Location = new Point(404, 374);
+            lblEstadoImagen.Size = new Size(410, 55);
             lblEstadoImagen.TextAlign = ContentAlignment.MiddleCenter;
-            lblContador.Dock = DockStyle.Fill;
+            lblContador.Location = new Point(404, 433);
+            lblContador.Size = new Size(410, 25);
             lblContador.TextAlign = ContentAlignment.MiddleCenter;
-            var navegacion = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight };
+            btnAnterior.Name = "btnAnterior";
             btnAnterior.Text = "Anterior";
-            btnAnterior.AutoSize = true;
+            btnAnterior.Location = new Point(470, 469);
+            btnAnterior.Size = new Size(100, 30);
+            btnAnterior.TabIndex = 6;
             btnAnterior.Click += btnAnterior_Click;
+            btnSiguiente.Name = "btnSiguiente";
             btnSiguiente.Text = "Siguiente";
-            btnSiguiente.AutoSize = true;
+            btnSiguiente.Location = new Point(620, 469);
+            btnSiguiente.Size = new Size(100, 30);
+            btnSiguiente.TabIndex = 7;
             btnSiguiente.Click += btnSiguiente_Click;
-            navegacion.Controls.AddRange(new Control[] { btnAnterior, btnSiguiente });
-            imagenes.Controls.Add(pictureBoxArticulo, 0, 0);
-            imagenes.Controls.Add(lblEstadoImagen, 0, 1);
-            imagenes.Controls.Add(lblContador, 0, 2);
-            imagenes.Controls.Add(navegacion, 0, 3);
-            contenido.Controls.Add(datos, 0, 0);
-            contenido.Controls.Add(imagenes, 1, 0);
-
-            var pie = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 52, Padding = new Padding(10), FlowDirection = FlowDirection.RightToLeft };
-            var cerrar = new Button { Text = "Cerrar", AutoSize = true, DialogResult = DialogResult.Cancel };
-            pie.Controls.Add(cerrar);
-            CancelButton = cerrar;
-            Controls.Add(contenido);
-            Controls.Add(pie);
+            btnCerrar.Name = "btnCerrar";
+            btnCerrar.Text = "Cerrar";
+            btnCerrar.Location = new Point(714, 517);
+            btnCerrar.Size = new Size(100, 30);
+            btnCerrar.TabIndex = 8;
+            btnCerrar.DialogResult = DialogResult.Cancel;
+            CancelButton = btnCerrar;
+            Controls.Add(txtCodigo);
+            Controls.Add(txtNombre);
+            Controls.Add(txtDescripcion);
+            Controls.Add(txtMarca);
+            Controls.Add(txtCategoria);
+            Controls.Add(txtPrecio);
+            Controls.Add(pictureBoxArticulo);
+            Controls.Add(lblContador);
+            Controls.Add(lblEstadoImagen);
+            Controls.Add(btnAnterior);
+            Controls.Add(btnSiguiente);
+            Controls.Add(btnCerrar);
+            Controls.Add(lblCodigo);
+            Controls.Add(lblNombre);
+            Controls.Add(lblDescripcion);
+            Controls.Add(lblMarca);
+            Controls.Add(lblCategoria);
+            Controls.Add(lblPrecio);
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(840, 560);
-            MinimumSize = new Size(760, 540);
+            ClientSize = new Size(840, 565);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
             StartPosition = FormStartPosition.CenterParent;
             Name = "frmDetalleArticulo";
             Text = "Detalle del artículo";
-            MinimizeBox = false;
             Load += frmDetalleArticulo_Load;
+            ((System.ComponentModel.ISupportInitialize)pictureBoxArticulo).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
     }
 }

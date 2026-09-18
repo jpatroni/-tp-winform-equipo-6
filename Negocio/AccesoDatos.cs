@@ -1,7 +1,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace TPWinForm_equipo_6.Datos
+namespace TPWinForm_equipo_6.Negocio
 {
     public sealed class AccesoDatos : IDisposable
     {

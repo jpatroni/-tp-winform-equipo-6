@@ -1,115 +1,154 @@
 using Dominio;
-using System.Net.Http;
+using System.ComponentModel;
 
 namespace TPWinForm_equipo_6
 {
     public partial class frmDetalleArticulo : Form
     {
-        private static readonly HttpClient cliente = new() { Timeout = TimeSpan.FromSeconds(15) };
-        private readonly Articulo articulo;
-        private readonly List<string> direcciones;
-        private int indiceImagen;
-        private CancellationTokenSource? cargaImagen;
+        private Articulo? articulo;
+        private int indiceImagen = 0;
+        private bool cargandoImagen = false;
+        private bool cerrando = false;
+        private System.Windows.Forms.Timer tiempoCarga;
 
-        public frmDetalleArticulo(Articulo articulo)
+        // El constructor sin parámetros permite abrir el diseñador de Visual Studio.
+        public frmDetalleArticulo()
         {
-            ArgumentNullException.ThrowIfNull(articulo);
             InitializeComponent();
-            this.articulo = articulo;
-            // Copia de las direcciones: el detalle no modifica el artículo original.
-            direcciones = articulo.Imagenes.Select(imagen => imagen.IdImagen).ToList();
+            tiempoCarga = new System.Windows.Forms.Timer(components!);
+            tiempoCarga.Interval = 15000;
+            tiempoCarga.Tick += tiempoCarga_Tick;
         }
 
-        private async void frmDetalleArticulo_Load(object? sender, EventArgs e)
+        public frmDetalleArticulo(Articulo articulo) : this()
         {
+            this.articulo = articulo;
+        }
+
+        private void frmDetalleArticulo_Load(object? sender, EventArgs e)
+        {
+            if (articulo == null)
+            {
+                MessageBox.Show(this, "No se recibió un artículo para mostrar.");
+                Close();
+                return;
+            }
+
             txtCodigo.Text = articulo.Codigo;
             txtNombre.Text = articulo.Nombre;
             txtDescripcion.Text = articulo.Descripcion;
-            txtMarca.Text = articulo.Marca?.Descripcion ?? string.Empty;
-            txtCategoria.Text = articulo.Categoria?.descripcion ?? string.Empty;
             txtPrecio.Text = articulo.Precio.ToString("N2");
-            await MostrarImagenActualAsync();
+            if (articulo.Marca != null)
+                txtMarca.Text = articulo.Marca.Descripcion;
+            if (articulo.Categoria != null)
+                txtCategoria.Text = articulo.Categoria.descripcion;
+
+            MostrarImagen();
         }
 
-        private async void btnAnterior_Click(object? sender, EventArgs e)
+        private void btnAnterior_Click(object? sender, EventArgs e)
         {
-            if (indiceImagen <= 0) return;
+            if (cargandoImagen || indiceImagen == 0) return;
             indiceImagen--;
-            await MostrarImagenActualAsync();
+            MostrarImagen();
         }
 
-        private async void btnSiguiente_Click(object? sender, EventArgs e)
+        private void btnSiguiente_Click(object? sender, EventArgs e)
         {
-            if (indiceImagen >= direcciones.Count - 1) return;
+            if (articulo == null || cargandoImagen) return;
+            if (indiceImagen >= articulo.Imagenes.Count - 1) return;
             indiceImagen++;
-            await MostrarImagenActualAsync();
+            MostrarImagen();
         }
 
-        private async Task MostrarImagenActualAsync()
+        private void ActualizarBotones()
         {
-            cargaImagen?.Cancel();
-            ReemplazarImagen(null);
-            btnAnterior.Enabled = indiceImagen > 0;
-            btnSiguiente.Enabled = indiceImagen < direcciones.Count - 1;
-            lblContador.Text = direcciones.Count == 0
-                ? "Sin imágenes" : $"Imagen {indiceImagen + 1} de {direcciones.Count}";
+            btnAnterior.Enabled = !cargandoImagen && indiceImagen > 0;
+            btnSiguiente.Enabled = !cargandoImagen && articulo != null
+                && indiceImagen < articulo.Imagenes.Count - 1;
+        }
 
-            if (direcciones.Count == 0)
+        private void MostrarImagen()
+        {
+            LimpiarImagen();
+            ActualizarBotones();
+            if (articulo == null || articulo.Imagenes.Count == 0)
             {
+                lblContador.Text = "Sin imágenes";
                 lblEstadoImagen.Text = "Este artículo no tiene imágenes.";
                 return;
             }
 
-            if (!Uri.TryCreate(direcciones[indiceImagen], UriKind.Absolute, out var uri)
-                || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            lblContador.Text = "Imagen " + (indiceImagen + 1) + " de " + articulo.Imagenes.Count;
+            // En el modelo actual, IdImagen contiene la dirección web, no un número.
+            string direccion = articulo.Imagenes[indiceImagen].IdImagen;
+            if (!Uri.TryCreate(direccion, UriKind.Absolute, out Uri? uri)
+                || (uri.Scheme != "http" && uri.Scheme != "https"))
             {
                 lblEstadoImagen.Text = "La dirección de esta imagen no es válida.";
                 return;
             }
 
-            using var cancelacion = new CancellationTokenSource();
-            cargaImagen = cancelacion;
-            lblEstadoImagen.Text = "Cargando imagen…";
             try
             {
-                // Descarga asincrónica: navegar y cerrar siguen disponibles durante la carga.
-                byte[] contenido = await cliente.GetByteArrayAsync(uri, cancelacion.Token);
-                if (cancelacion.IsCancellationRequested || IsDisposed) return;
-
-                using var stream = new MemoryStream(contenido);
-                using var original = Image.FromStream(stream);
-                ReemplazarImagen(new Bitmap(original));
-                lblEstadoImagen.Text = string.Empty;
-            }
-            catch (OperationCanceledException) when (cancelacion.IsCancellationRequested)
-            {
-                // Otra imagen o el cierre del formulario cancelaron esta carga.
+                cargandoImagen = true;
+                ActualizarBotones();
+                lblEstadoImagen.Text = "Cargando imagen…";
+                tiempoCarga.Start();
+                // PictureBox descarga sin bloquear la ventana y avisa en LoadCompleted.
+                pictureBoxArticulo.LoadAsync(direccion);
             }
             catch (Exception ex)
             {
-                if (!cancelacion.IsCancellationRequested && !IsDisposed)
-                {
-                    System.Diagnostics.Trace.TraceError(ex.ToString());
-                    lblEstadoImagen.Text = "No se pudo cargar la imagen. Podés seguir recorriendo las demás.";
-                }
-            }
-            finally
-            {
-                if (ReferenceEquals(cargaImagen, cancelacion)) cargaImagen = null;
+                tiempoCarga.Stop();
+                cargandoImagen = false;
+                System.Diagnostics.Trace.TraceError(ex.ToString());
+                lblEstadoImagen.Text = "No se pudo iniciar la carga de la imagen.";
+                ActualizarBotones();
             }
         }
 
-        private void ReemplazarImagen(Image? nueva)
+        private void pictureBoxArticulo_LoadCompleted(object? sender, AsyncCompletedEventArgs e)
+        {
+            if (cerrando) return;
+            tiempoCarga.Stop();
+            cargandoImagen = false;
+
+            // Los errores de una descarga asincrónica llegan aquí, no al catch anterior.
+            if (e.Cancelled)
+                lblEstadoImagen.Text = "La carga superó el tiempo de espera. Podés seguir navegando.";
+            else if (e.Error != null)
+            {
+                System.Diagnostics.Trace.TraceError(e.Error.ToString());
+                lblEstadoImagen.Text = "No se pudo cargar la imagen. Podés seguir navegando.";
+                LimpiarImagen();
+            }
+            else
+                lblEstadoImagen.Text = string.Empty;
+
+            ActualizarBotones();
+        }
+
+        private void tiempoCarga_Tick(object? sender, EventArgs e)
+        {
+            tiempoCarga.Stop();
+            pictureBoxArticulo.CancelAsync();
+        }
+
+        private void LimpiarImagen()
         {
             Image? anterior = pictureBoxArticulo.Image;
-            pictureBoxArticulo.Image = nueva;
-            anterior?.Dispose();
+            pictureBoxArticulo.Image = null;
+            if (anterior != null) anterior.Dispose();
         }
 
         private void LiberarImagen()
         {
-            cargaImagen?.Cancel();
-            ReemplazarImagen(null);
+            cerrando = true;
+            if (tiempoCarga != null) tiempoCarga.Stop();
+            pictureBoxArticulo.LoadCompleted -= pictureBoxArticulo_LoadCompleted;
+            pictureBoxArticulo.CancelAsync();
+            LimpiarImagen();
         }
     }
 }
