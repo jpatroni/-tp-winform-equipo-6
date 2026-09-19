@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Dominio;
 using TPWinForm_equipo_6.Negocio;
 
@@ -12,6 +14,13 @@ namespace TPWinForm_equipo_6
             cboMarca.DataSource = negocio.Listar();
             cboMarca.DisplayMember = "descripcion";
             cboMarca.ValueMember = "id";
+            // Creo el objeto que sabe consultar categorías.
+            CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
+
+            cboCategoria.DisplayMember = "descripcion";
+            cboCategoria.ValueMember = "id";
+            // Entrego esas categorías al desplegable.
+            cboCategoria.DataSource = categoriaNegocio.Listar();
 
 
         }
@@ -25,6 +34,17 @@ namespace TPWinForm_equipo_6
             Articulo articulo = new();
             try
             {
+                if (string.IsNullOrWhiteSpace(txtCodigo.Text))
+                {
+                    MessageBox.Show("El campo codigo no puede estar vacio ");
+                    return;
+                }
+                if(string.IsNullOrWhiteSpace(txtNombre.Text))
+                {
+                    MessageBox.Show("El campo nombre no puede estar vacio");
+                    return;
+                }
+
                 articulo.Codigo = txtCodigo.Text;
                 articulo.Nombre = txtNombre.Text;
                 articulo.Descripcion = txtDescripcion.Text;
