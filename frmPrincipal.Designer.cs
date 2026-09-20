@@ -1,6 +1,6 @@
 namespace TPWinForm_equipo_6
 {
-    partial class Form1
+    partial class frmPrincipal
     {
         /// <summary>
         ///  Required designer variable.

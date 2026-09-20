@@ -1,4 +1,4 @@
-namespace TPWinForm_equipo_6
+﻿namespace TPWinForm_equipo_6
 {
     partial class frmArticuloAlta
     {
@@ -167,6 +167,7 @@ namespace TPWinForm_equipo_6
             txtURLImagen.Name = "txtURLImagen";
             txtURLImagen.Size = new Size(310, 23);
             txtURLImagen.TabIndex = 9;
+            txtURLImagen.Leave += txtUrlImagen_Leave;
             // 
             // btnAgregarImagen
             // 
@@ -185,6 +186,7 @@ namespace TPWinForm_equipo_6
             pbxArticulo.Size = new Size(242, 267);
             pbxArticulo.TabIndex = 11;
             pbxArticulo.TabStop = false;
+            pbxArticulo.SizeMode = PictureBoxSizeMode.Zoom;
             // 
             // frmArticuloAlta
             // 

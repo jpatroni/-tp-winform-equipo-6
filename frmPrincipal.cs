@@ -1,11 +1,11 @@
-using Dominio;
+﻿using Dominio;
 using TPWinForm_equipo_6.Negocio;
 
 namespace TPWinForm_equipo_6
 {
-    public partial class Form1 : Form
+    public partial class frmPrincipal : Form
     {
-        public Form1()
+        public frmPrincipal()
         {
             InitializeComponent();
         }
@@ -47,7 +47,24 @@ namespace TPWinForm_equipo_6
         private void btnAgregar_Click(object? sender, EventArgs e)
         {
             using var formulario = new frmArticuloAlta();
-            formulario.ShowDialog(this);
+            if ((formulario.ShowDialog(this)) == DialogResult.OK)
+            {
+                try
+                {
+                    dataGridView1.DataSource = new ArticuloNegocio().Listar();
+
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show("No se pudo actualizar el listado\n" + ex.Message);
+
+                }
+
+
+            }
+
+
         }
 
         private void btnVerDetalle_Click(object? sender, EventArgs e)
@@ -77,11 +94,21 @@ namespace TPWinForm_equipo_6
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
-            Articulo seleccionado;
-            seleccionado = (Articulo)dataGridView1.CurrentRow.DataBoundItem;
-
-            frmArticuloAlta modificar = new frmArticuloAlta(seleccionado);
-            modificar.ShowDialog(); 
+            if (dataGridView1.CurrentRow?.DataBoundItem is not Articulo seleccionado)
+            {
+                MessageBox.Show("Seleccioná un artículo para modificar.");
+                return;
+            }
+            try
+            {
+                using var modificar = new frmArticuloAlta(seleccionado);
+                if (modificar.ShowDialog(this) == DialogResult.OK)
+                    dataGridView1.DataSource = new ArticuloNegocio().Listar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudo completar la modificación o actualizar el listado.\n" + ex.Message);
+            }
         }
     }
 }

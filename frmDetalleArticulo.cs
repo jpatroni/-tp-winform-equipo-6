@@ -1,4 +1,4 @@
-using Dominio;
+﻿using Dominio;
 using System.ComponentModel;
 
 namespace TPWinForm_equipo_6
@@ -82,6 +82,20 @@ namespace TPWinForm_equipo_6
             lblContador.Text = "Imagen " + (indiceImagen + 1) + " de " + articulo.Imagenes.Count;
             // En el modelo actual, IdImagen contiene la dirección web, no un número.
             string direccion = articulo.Imagenes[indiceImagen].IdImagen;
+            if (System.IO.File.Exists(direccion))
+            {
+                try
+                {
+                    using var original = Image.FromFile(direccion);
+                    pictureBoxArticulo.Image = new Bitmap(original);
+                    lblEstadoImagen.Text = string.Empty;
+                }
+                catch (Exception)
+                {
+                    lblEstadoImagen.Text = "No se pudo abrir la imagen local.";
+                }
+                return;
+            }
             if (!Uri.TryCreate(direccion, UriKind.Absolute, out Uri? uri)
                 || (uri.Scheme != "http" && uri.Scheme != "https"))
             {

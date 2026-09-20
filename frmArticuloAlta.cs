@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Dominio;
-using Microsoft.Win32;
 using System.Configuration;
 using System.IO;
 using TPWinForm_equipo_6.Negocio;
@@ -10,8 +9,8 @@ namespace TPWinForm_equipo_6
 {
     public partial class frmArticuloAlta : Form
     {
-        private Articulo articulo = null;
-        private OpenFileDialog archivo = null;
+        private Articulo articulo = new Articulo();
+        private string? archivoLocal;
         public frmArticuloAlta()
         {
             InitializeComponent();
@@ -21,7 +20,17 @@ namespace TPWinForm_equipo_6
         public frmArticuloAlta(Articulo articulo)
         {
             InitializeComponent();
-            this.articulo = articulo;
+            // Editamos una copia: cancelar no debe alterar el artículo de la grilla.
+            this.articulo = new Articulo
+            {
+                Id = articulo.Id, Codigo = articulo.Codigo, Nombre = articulo.Nombre,
+                Descripcion = articulo.Descripcion, Precio = articulo.Precio,
+                Marca = articulo.Marca, Categoria = articulo.Categoria,
+                Imagenes = articulo.Imagenes.Select(i => new Imagen
+                {
+                    Id = i.Id, IdArticulo = i.IdArticulo, IdImagen = i.IdImagen
+                }).ToList()
+            };
             Text = "Modificar Artículo";
         }
 
@@ -39,9 +48,15 @@ namespace TPWinForm_equipo_6
                     MessageBox.Show("El campo nombre no puede estar vacio");
                     return;
                 }
+                if (nudPrecio.Value <=0)
+                {
+                    MessageBox.Show("El precio debe ser mayor a 0");
+                    return;
+                }
 
-                articulo.Codigo = txtCodigo.Text;
-                articulo.Nombre = txtNombre.Text;
+
+                articulo.Codigo = txtCodigo.Text.Trim();
+                articulo.Nombre = txtNombre.Text.Trim();
                 articulo.Descripcion = txtDescripcion.Text;
                 articulo.Precio = nudPrecio.Value;
                 if (cboMarca.SelectedItem == null)
@@ -57,6 +72,35 @@ namespace TPWinForm_equipo_6
                 }
                 articulo.Categoria = (Categoria)cboCategoria.SelectedItem;
 
+                // Conservamos las demás imágenes al editar la primera.
+                string direccion = txtURLImagen.Text.Trim();
+                if (direccion.Length > 0)
+                {
+                    bool esWeb = Uri.TryCreate(direccion, UriKind.Absolute, out Uri? uri)
+                        && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+                    if (!esWeb && !File.Exists(direccion))
+                    {
+                        MessageBox.Show("Ingresá una URL http/https o seleccioná un archivo existente.");
+                        return;
+                    }
+                    if (!esWeb && direccion == archivoLocal)
+                    {
+                        string carpeta = ConfigurationManager.AppSettings["images-folder"]
+                            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CatalogoEquipo6", "Imagenes");
+                        Directory.CreateDirectory(carpeta);
+                        string destino = Path.Combine(carpeta, Guid.NewGuid() + Path.GetExtension(direccion));
+                        File.Copy(direccion, destino);
+                        direccion = destino;
+                        txtURLImagen.Text = destino;
+                        archivoLocal = null;
+                    }
+                    if (articulo.Imagenes.Count == 0)
+                        articulo.Imagenes.Add(new Imagen());
+                    articulo.Imagenes[0].IdImagen = direccion;
+                }
+                else if (articulo.Imagenes.Count > 0)
+                    articulo.Imagenes.RemoveAt(0);
+
                 ArticuloNegocio negocio = new ArticuloNegocio();
 
                 if (articulo.Id != 0)
@@ -70,20 +114,13 @@ namespace TPWinForm_equipo_6
                     MessageBox.Show("Agregado exitosamente");
                 }
 
-                // Guardo imagen si la levantó localmente:
-                if (archivo != null && !(txtURLImagen.Text.ToUpper().Contains("HTTP")))
-                    File.Copy(
-                        archivo.FileName,
-                        ConfigurationManager.AppSettings["images-folder"] + archivo.SafeFileName
-                    );
-
-                Close();
+                DialogResult = DialogResult.OK;
 
 
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.ToString());
+                MessageBox.Show(this, ex.Message, "No se pudo completar la operación", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
 
             }
@@ -100,23 +137,33 @@ namespace TPWinForm_equipo_6
 
                 MarcaNegocio negocio = new MarcaNegocio();
                 cboMarca.DataSource = negocio.Listar();
-                cboMarca.DisplayMember = "descripcion";
-                cboMarca.ValueMember = "id";
+                cboMarca.DisplayMember = "Descripcion";
+                cboMarca.ValueMember = "Id";
+                cboMarca.DropDownStyle = ComboBoxStyle.DropDownList;
 
-                //CategoriaNegocio negocio = new CategoriaNegocio();
-                //cboCategoria.DataSource = negocio.Listar();
-                //cboCategoria.DisplayMember = "descripcion";
-                //cboCategoria.ValueMember = "id";
+                CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
+                cboCategoria.DisplayMember = "descripcion";
+                cboCategoria.ValueMember = "Id";
+                cboCategoria.DataSource = categoriaNegocio.Listar();
 
-                if (articulo != null)
+                if (articulo.Id != 0)
                 {
-
+                    txtCodigo.Text = articulo.Codigo;
+                    txtNombre.Text = articulo.Nombre;
+                    txtDescripcion.Text = articulo.Descripcion;
+                    nudPrecio.Maximum = Math.Max(nudPrecio.Maximum, articulo.Precio);
+                    nudPrecio.Minimum = Math.Min(nudPrecio.Minimum, articulo.Precio);
+                    nudPrecio.Value = articulo.Precio;
+                    cboMarca.SelectedValue = articulo.Marca.Id;
+                    cboCategoria.SelectedValue = articulo.Categoria.Id;
+                    txtURLImagen.Text = articulo.Imagenes.FirstOrDefault()?.IdImagen ?? string.Empty;
+                    cargarImagen(txtURLImagen.Text);
                 }
 
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.ToString());
+                MessageBox.Show(this, ex.Message, "No se pudo completar la operación", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
 
             }
@@ -130,11 +177,20 @@ namespace TPWinForm_equipo_6
         {
             try
             {
-                pbxArticulo.Load(imagen);
+                pbxArticulo.Image?.Dispose();
+                pbxArticulo.Image = null;
+                if (string.IsNullOrWhiteSpace(imagen)) return;
+                if (File.Exists(imagen))
+                {
+                    using var original = Image.FromFile(imagen);
+                    pbxArticulo.Image = new Bitmap(original);
+                }
+                else
+                    pbxArticulo.LoadAsync(imagen);
             }
             catch (Exception)
             {
-                pbxArticulo.Load("https://efectocolibri.com/wp-content/uploads/2021/01/placeholder.png");
+                pbxArticulo.Image = null;
             }
         }
 
@@ -145,10 +201,11 @@ namespace TPWinForm_equipo_6
 
         private void btnAgregarImagen_Click(object sender, EventArgs e)
         {
-            archivo = new OpenFileDialog();
-            archivo.Filter = "jpg|*.jpg;|png|*.png";
+            using var archivo = new OpenFileDialog();
+            archivo.Filter = "Imágenes|*.jpg;*.jpeg;*.png";
             if (archivo.ShowDialog() == DialogResult.OK)
             {
+                archivoLocal = archivo.FileName;
                 txtURLImagen.Text = archivo.FileName;
                 cargarImagen(archivo.FileName);
 

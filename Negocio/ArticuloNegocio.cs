@@ -1,5 +1,6 @@
-using Dominio;
+﻿using Dominio;
 using System.Data;
+using System.Transactions;
 
 namespace TPWinForm_equipo_6.Negocio
 {
@@ -63,7 +64,8 @@ namespace TPWinForm_equipo_6.Negocio
         public void Agregar(Articulo nuevo)
 
         {
-            AccesoDatos datos = new AccesoDatos();
+            using var transaccion = new TransactionScope();
+            using var datos = new AccesoDatos();
 
             try
             {
@@ -89,7 +91,7 @@ namespace TPWinForm_equipo_6.Negocio
                 {
                     foreach (Imagen imagen in nuevo.Imagenes)
                     {
-                        AccesoDatos datosImagen = new AccesoDatos();
+                        using var datosImagen = new AccesoDatos();
                         datosImagen.SetearConsulta(@"
 
                          INSERT INTO IMAGENES
@@ -102,6 +104,7 @@ namespace TPWinForm_equipo_6.Negocio
                         datosImagen.EjecutarAccion();
                     }
                 }
+                transaccion.Complete();
             }
 
             catch
@@ -116,7 +119,8 @@ namespace TPWinForm_equipo_6.Negocio
 
         public void Modificar(Articulo nuevo)
         {
-            AccesoDatos datos = new AccesoDatos();
+            using var transaccion = new TransactionScope();
+            using var datos = new AccesoDatos();
 
             try
             {
@@ -141,7 +145,7 @@ namespace TPWinForm_equipo_6.Negocio
                 datos.EjecutarAccion();
 
                 //Primero eliminamos las imágenes anteriores
-                AccesoDatos datosImagen = new AccesoDatos();
+                using var datosImagen = new AccesoDatos();
 
                 datosImagen.SetearConsulta(@"
             DELETE FROM IMAGENES
@@ -156,7 +160,7 @@ namespace TPWinForm_equipo_6.Negocio
                 {
                     foreach (Imagen imagen in nuevo.Imagenes)
                     {
-                        AccesoDatos datosNuevaImagen = new AccesoDatos();
+                        using var datosNuevaImagen = new AccesoDatos();
 
                         datosNuevaImagen.SetearConsulta(@"
                     INSERT INTO IMAGENES
@@ -170,6 +174,7 @@ namespace TPWinForm_equipo_6.Negocio
                         datosNuevaImagen.EjecutarAccion();
                     }
                 }
+                transaccion.Complete();
             }
             catch
             {
