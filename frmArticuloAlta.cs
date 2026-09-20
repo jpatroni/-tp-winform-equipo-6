@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Dominio;
 using Microsoft.Win32;
 using System.Configuration;
@@ -27,6 +29,17 @@ namespace TPWinForm_equipo_6
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(txtCodigo.Text))
+                {
+                    MessageBox.Show("El campo codigo no puede estar vacio ");
+                    return;
+                }
+                if(string.IsNullOrWhiteSpace(txtNombre.Text))
+                {
+                    MessageBox.Show("El campo nombre no puede estar vacio");
+                    return;
+                }
+
                 articulo.Codigo = txtCodigo.Text;
                 articulo.Nombre = txtNombre.Text;
                 articulo.Descripcion = txtDescripcion.Text;

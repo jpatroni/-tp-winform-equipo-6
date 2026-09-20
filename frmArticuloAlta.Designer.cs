@@ -135,7 +135,6 @@ namespace TPWinForm_equipo_6
             // 
             // btnGuardar
             // 
-            btnGuardar.Enabled = false;
             btnGuardar.Location = new Point(240, 350);
             btnGuardar.Name = "btnGuardar";
             btnGuardar.Size = new Size(95, 30);
