@@ -173,24 +173,36 @@ namespace TPWinForm_equipo_6
             cargarImagen(txtURLImagen.Text);
         }
 
-        private void cargarImagen(string imagen)
+      
+                private void cargarImagen(string imagen)
         {
             try
             {
                 pbxArticulo.Image?.Dispose();
                 pbxArticulo.Image = null;
-                if (string.IsNullOrWhiteSpace(imagen)) return;
+
+                if (string.IsNullOrWhiteSpace(imagen))
+                    return;
+
                 if (File.Exists(imagen))
                 {
                     using var original = Image.FromFile(imagen);
                     pbxArticulo.Image = new Bitmap(original);
                 }
                 else
-                    pbxArticulo.LoadAsync(imagen);
+                {
+                    pbxArticulo.Load(imagen);
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 pbxArticulo.Image = null;
+
+                MessageBox.Show(
+                    ex.Message,
+                    "Error al cargar la imagen",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
