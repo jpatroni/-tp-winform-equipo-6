@@ -33,5 +33,68 @@ namespace TPWinForm_equipo_6.Negocio
 
             return marcas;
         }
+
+            public void Agregar(string descripcion)
+        {
+            using var datos = new AccesoDatos();
+
+            datos.SetearConsulta("""
+        INSERT INTO MARCAS (Descripcion)
+        VALUES (@descripcion)
+        """);
+
+            datos.SetearParametro(
+                "@descripcion",
+                System.Data.SqlDbType.VarChar,
+                descripcion);
+
+            datos.EjecutarAccion();
+        }
+        public void Modificar(int id, string descripcion)
+        {
+            using var datos = new AccesoDatos();
+
+            datos.SetearConsulta("""
+        UPDATE MARCAS
+        SET Descripcion = @descripcion
+        WHERE Id = @id
+        """);
+
+            datos.SetearParametro(
+                "@descripcion",
+                System.Data.SqlDbType.VarChar,
+                descripcion);
+
+            datos.SetearParametro(
+                "@id",
+                System.Data.SqlDbType.Int,
+                id);
+
+            datos.EjecutarAccion();
+        }
+
+        public bool EstaEnUso(int id)
+        {
+            using var datos = new AccesoDatos();
+
+            datos.SetearConsulta("""
+        SELECT TOP 1 Id
+        FROM ARTICULOS
+        WHERE IdMarca = @id
+        """);
+
+            datos.SetearParametro(
+                "@id",
+                System.Data.SqlDbType.Int,
+                id);
+
+            datos.EjecutarLectura();
+
+            return datos.Lector.Read();
+        }
+
+
+
+    } 
     }
-}
+
