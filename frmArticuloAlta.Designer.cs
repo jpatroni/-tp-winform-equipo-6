@@ -24,7 +24,12 @@ namespace TPWinForm_equipo_6
             cboCategoria = new ComboBox();
             btnGuardar = new Button();
             btnCancelar = new Button();
+            lblURLImagen = new Label();
+            txtURLImagen = new TextBox();
+            btnAgregarImagen = new Button();
+            pbxArticulo = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)nudPrecio).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbxArticulo).BeginInit();
             SuspendLayout();
             // 
             // lblCodigo
@@ -73,13 +78,13 @@ namespace TPWinForm_equipo_6
             txtDescripcion.Location = new Point(130, 112);
             txtDescripcion.Multiline = true;
             txtDescripcion.Name = "txtDescripcion";
-            txtDescripcion.Size = new Size(310, 70);
+            txtDescripcion.Size = new Size(310, 50);
             txtDescripcion.TabIndex = 2;
             // 
             // lblPrecio
             // 
             lblPrecio.AutoSize = true;
-            lblPrecio.Location = new Point(24, 204);
+            lblPrecio.Location = new Point(24, 177);
             lblPrecio.Name = "lblPrecio";
             lblPrecio.Size = new Size(40, 15);
             lblPrecio.TabIndex = 3;
@@ -88,7 +93,7 @@ namespace TPWinForm_equipo_6
             // nudPrecio
             // 
             nudPrecio.DecimalPlaces = 2;
-            nudPrecio.Location = new Point(130, 204);
+            nudPrecio.Location = new Point(130, 177);
             nudPrecio.Maximum = new decimal(new int[] { 100000000, 0, 0, 0 });
             nudPrecio.Name = "nudPrecio";
             nudPrecio.Size = new Size(310, 23);
@@ -98,7 +103,7 @@ namespace TPWinForm_equipo_6
             // lblMarca
             // 
             lblMarca.AutoSize = true;
-            lblMarca.Location = new Point(24, 248);
+            lblMarca.Location = new Point(24, 221);
             lblMarca.Name = "lblMarca";
             lblMarca.Size = new Size(40, 15);
             lblMarca.TabIndex = 4;
@@ -106,16 +111,15 @@ namespace TPWinForm_equipo_6
             // 
             // cboMarca
             // 
-            cboMarca.Location = new Point(130, 248);
+            cboMarca.Location = new Point(130, 221);
             cboMarca.Name = "cboMarca";
             cboMarca.Size = new Size(310, 23);
             cboMarca.TabIndex = 4;
-            cboMarca.SelectedIndexChanged += cboMarca_SelectedIndexChanged;
             // 
             // lblCategoria
             // 
             lblCategoria.AutoSize = true;
-            lblCategoria.Location = new Point(24, 292);
+            lblCategoria.Location = new Point(24, 265);
             lblCategoria.Name = "lblCategoria";
             lblCategoria.Size = new Size(58, 15);
             lblCategoria.TabIndex = 5;
@@ -124,7 +128,7 @@ namespace TPWinForm_equipo_6
             // cboCategoria
             // 
             cboCategoria.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboCategoria.Location = new Point(130, 292);
+            cboCategoria.Location = new Point(130, 265);
             cboCategoria.Name = "cboCategoria";
             cboCategoria.Size = new Size(310, 23);
             cboCategoria.TabIndex = 5;
@@ -149,12 +153,50 @@ namespace TPWinForm_equipo_6
             btnCancelar.Text = "Cancelar";
             btnCancelar.Click += btnCancelar_Click;
             // 
+            // lblURLImagen
+            // 
+            lblURLImagen.AutoSize = true;
+            lblURLImagen.Location = new Point(28, 310);
+            lblURLImagen.Name = "lblURLImagen";
+            lblURLImagen.Size = new Size(71, 15);
+            lblURLImagen.TabIndex = 8;
+            lblURLImagen.Text = "URL Imagen";
+            // 
+            // txtURLImagen
+            // 
+            txtURLImagen.Location = new Point(130, 310);
+            txtURLImagen.Name = "txtURLImagen";
+            txtURLImagen.Size = new Size(310, 23);
+            txtURLImagen.TabIndex = 9;
+            // 
+            // btnAgregarImagen
+            // 
+            btnAgregarImagen.Location = new Point(456, 312);
+            btnAgregarImagen.Name = "btnAgregarImagen";
+            btnAgregarImagen.Size = new Size(145, 23);
+            btnAgregarImagen.TabIndex = 10;
+            btnAgregarImagen.Text = "Agregar imagen";
+            btnAgregarImagen.UseVisualStyleBackColor = true;
+            btnAgregarImagen.Click += btnAgregarImagen_Click;
+            // 
+            // pbxArticulo
+            // 
+            pbxArticulo.Location = new Point(453, 21);
+            pbxArticulo.Name = "pbxArticulo";
+            pbxArticulo.Size = new Size(242, 267);
+            pbxArticulo.TabIndex = 11;
+            pbxArticulo.TabStop = false;
+            // 
             // frmArticuloAlta
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancelar;
-            ClientSize = new Size(470, 405);
+            ClientSize = new Size(831, 405);
+            Controls.Add(pbxArticulo);
+            Controls.Add(btnAgregarImagen);
+            Controls.Add(txtURLImagen);
+            Controls.Add(lblURLImagen);
             Controls.Add(lblCodigo);
             Controls.Add(txtCodigo);
             Controls.Add(lblNombre);
@@ -175,7 +217,9 @@ namespace TPWinForm_equipo_6
             Name = "frmArticuloAlta";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Agregar artículo";
+            Load += frmArticuloAlta_Load;
             ((System.ComponentModel.ISupportInitialize)nudPrecio).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbxArticulo).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -194,6 +238,10 @@ namespace TPWinForm_equipo_6
 
         private Button btnGuardar;
         private Button btnCancelar;
+        private Label lblURLImagen;
+        private TextBox txtURLImagen;
+        private Button btnAgregarImagen;
+        private PictureBox pbxArticulo;
     }
 }
 

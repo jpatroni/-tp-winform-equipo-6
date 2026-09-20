@@ -77,7 +77,11 @@ namespace TPWinForm_equipo_6
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
+            Articulo seleccionado;
+            seleccionado = (Articulo)dataGridView1.CurrentRow.DataBoundItem;
 
+            frmArticuloAlta modificar = new frmArticuloAlta(seleccionado);
+            modificar.ShowDialog(); 
         }
     }
 }
