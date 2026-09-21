@@ -36,7 +36,19 @@ Server con ADO.NET. AccesoDatos centraliza conexión, comandos y lector. Los
 formularios llaman a negocio; negocio usa AccesoDatos. Cerrar los recursos tras
 su uso y utilizar parámetros SQL para los valores ingresados.
 
-## Revisión inicial del código (19/09/2026)
+## Estado de implementación (21/09/2026)
+
+Implementados listado, búsqueda por nombre/código/marca/categoría, alta,
+modificación, detalle, baja lógica y administración de marcas y categorías.
+El editor permite gestionar varias imágenes sin un máximo fijo. El guardado de
+artículos e imágenes usa una transacción de SQL Server en una única conexión.
+
+La baja lógica usa Activo en las tres tablas; ejecutar AgregarActivo.sql antes de
+iniciar la aplicación en otra computadora. Ver README.md para instalación, uso y
+pruebas. Pasaron 27 comprobaciones automatizadas en una base temporal y se revisó
+la distribución de las pantallas. Las URLs externas dependen de su disponibilidad.
+
+## Revisión inicial del código (19/09/2026, histórica)
 
 Esta revisión es estática; no acredita funcionamiento probado contra la DB.
 
