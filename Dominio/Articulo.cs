@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Dominio
 {
-    internal class Articulo
+    public class Articulo
     {
         public int Id { get; set; }
         public string Codigo { get; set; } = string.Empty;
@@ -18,3 +18,4 @@ namespace Dominio
 
     }
 }
+
