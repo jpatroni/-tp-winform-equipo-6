@@ -1,4 +1,4 @@
-namespace TPWinForm_equipo_6
+﻿namespace TPWinForm_equipo_6
 {
     partial class frmPrincipal
     {
@@ -33,23 +33,24 @@ namespace TPWinForm_equipo_6
             btnModificar = new Button();
             btnVerDetalle = new Button();
             btnEliminar = new Button();
+            txtBuscar = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
-            // 
+            //
             // dataGridView1
-            // 
+            //
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dataGridView1.Location = new Point(24, 24);
+            dataGridView1.Location = new Point(42, 88);
             dataGridView1.MultiSelect = false;
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
-            dataGridView1.Size = new Size(752, 300);
+            dataGridView1.Size = new Size(667, 210);
             dataGridView1.TabIndex = 0;
-            // 
+            //
             // btnAgregar
-            // 
+            //
             btnAgregar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnAgregar.Location = new Point(24, 350);
             btnAgregar.Name = "btnAgregar";
@@ -57,9 +58,9 @@ namespace TPWinForm_equipo_6
             btnAgregar.TabIndex = 1;
             btnAgregar.Text = "Agregar";
             btnAgregar.Click += btnAgregar_Click;
-            // 
+            //
             // btnModificar
-            // 
+            //
             btnModificar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnModificar.Location = new Point(130, 350);
             btnModificar.Name = "btnModificar";
@@ -67,9 +68,9 @@ namespace TPWinForm_equipo_6
             btnModificar.TabIndex = 2;
             btnModificar.Text = "Modificar";
             btnModificar.Click += btnModificar_Click;
-            // 
+            //
             // btnVerDetalle
-            // 
+            //
             btnVerDetalle.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnVerDetalle.Location = new Point(236, 350);
             btnVerDetalle.Name = "btnVerDetalle";
@@ -77,31 +78,42 @@ namespace TPWinForm_equipo_6
             btnVerDetalle.TabIndex = 3;
             btnVerDetalle.Text = "Ver detalle";
             btnVerDetalle.Click += btnVerDetalle_Click;
-            // 
+            //
             // btnEliminar
-            // 
+            //
             btnEliminar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnEliminar.Location = new Point(342, 350);
             btnEliminar.Name = "btnEliminar";
             btnEliminar.Size = new Size(75, 23);
             btnEliminar.TabIndex = 4;
             btnEliminar.Text = "Eliminar";
-            // 
-            // Form1
-            // 
+            btnEliminar.Click += btnEliminar_Click;
+            //
+            // txtBuscar
+            //
+            txtBuscar.Location = new Point(130, 47);
+            txtBuscar.Name = "txtBuscar";
+            txtBuscar.Size = new Size(159, 23);
+            txtBuscar.TabIndex = 5;
+            txtBuscar.TextChanged += txtBuscar_TextChanged;
+            //
+            // frmPrincipal
+            //
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(txtBuscar);
             Controls.Add(dataGridView1);
             Controls.Add(btnAgregar);
             Controls.Add(btnModificar);
             Controls.Add(btnVerDetalle);
             Controls.Add(btnEliminar);
-            Name = "Form1";
+            Name = "frmPrincipal";
             Text = "Catálogo de artículos";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -110,5 +122,6 @@ namespace TPWinForm_equipo_6
         private Button btnModificar;
         private Button btnVerDetalle;
         private Button btnEliminar;
+        private TextBox txtBuscar;
     }
 }

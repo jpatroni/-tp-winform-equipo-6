@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Pruebas\**\*.cs" />
+    <EmbeddedResource Remove="Pruebas\**\*" />
     <Compile Remove="Dominio\**\*.cs" />
     <EmbeddedResource Remove="Dominio\**\*" />
     <None Remove="Dominio\**\*" />

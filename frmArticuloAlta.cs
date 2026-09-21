@@ -1,229 +1,162 @@
-﻿using System;
-using System.Collections.Generic;
-using Dominio;
-using System.Configuration;
-using System.IO;
+﻿using Dominio;
+using System.ComponentModel;
 using TPWinForm_equipo_6.Negocio;
 
 namespace TPWinForm_equipo_6
 {
     public partial class frmArticuloAlta : Form
     {
-        private Articulo articulo = new Articulo();
-        private string? archivoLocal;
+        private Articulo articulo = new();
+        private readonly BindingList<string> imagenes = new();
+        private readonly ListBox lstImagenes = new() { Name = "lstImagenes", Location = new Point(24, 370), Size = new Size(780, 110), HorizontalScrollbar = true };
+        private readonly Label estadoImagen = new() { Location = new Point(453, 290), Size = new Size(350, 20) };
+        private readonly VistaImagen vistaImagen;
+
         public frmArticuloAlta()
         {
             InitializeComponent();
+            ClientSize = new Size(831, 550);
+            btnGuardar.Location = new Point(610, 505);
+            btnCancelar.Location = new Point(710, 505);
+            btnAgregarImagen.Text = "Elegir archivos…";
+            lblURLImagen.Text = "URL / archivo";
+            txtCodigo.MaxLength = 50;
+            txtNombre.MaxLength = 50;
+            txtDescripcion.MaxLength = 150;
+            txtURLImagen.MaxLength = 1000;
+            lstImagenes.DataSource = imagenes;
+            Controls.Add(lstImagenes);
+            Controls.Add(estadoImagen);
+            vistaImagen = new VistaImagen(pbxArticulo, estadoImagen);
+            Disposed += (_, _) => vistaImagen.Dispose();
+            var agregarUrl = new Button { Name = "btnAgregarUrl", Text = "Añadir dirección", Location = new Point(610, 310), Size = new Size(145, 25) };
+            agregarUrl.Click += (_, _) => Intentar(() => AgregarDireccion(txtURLImagen.Text));
+            var quitar = new Button { Name = "btnQuitarImagen", Text = "Quitar seleccionada", Location = new Point(24, 490), AutoSize = true };
+            quitar.Click += (_, _) => { if (lstImagenes.SelectedIndex >= 0) imagenes.RemoveAt(lstImagenes.SelectedIndex); };
+            Controls.Add(agregarUrl);
+            Controls.Add(quitar);
+            Controls.Add(new Label { Text = "Imágenes del artículo (añadí direcciones o seleccioná varios archivos)", Location = new Point(24, 346), AutoSize = true });
+            lstImagenes.SelectedIndexChanged += (_, _) => cargarImagen(lstImagenes.SelectedItem as string ?? "");
+            AcceptButton = btnGuardar;
         }
 
-        //Modificar
-        public frmArticuloAlta(Articulo articulo)
+        public frmArticuloAlta(Articulo original) : this()
         {
-            InitializeComponent();
-            // Editamos una copia: cancelar no debe alterar el artículo de la grilla.
-            this.articulo = new Articulo
+            // El formulario edita una copia; cancelar nunca modifica la grilla.
+            articulo = new Articulo
             {
-                Id = articulo.Id, Codigo = articulo.Codigo, Nombre = articulo.Nombre,
-                Descripcion = articulo.Descripcion, Precio = articulo.Precio,
-                Marca = articulo.Marca, Categoria = articulo.Categoria,
-                Imagenes = articulo.Imagenes.Select(i => new Imagen
-                {
-                    Id = i.Id, IdArticulo = i.IdArticulo, IdImagen = i.IdImagen
-                }).ToList()
+                Id = original.Id, Codigo = original.Codigo, Nombre = original.Nombre,
+                Descripcion = original.Descripcion, Precio = original.Precio,
+                Marca = original.Marca, Categoria = original.Categoria
             };
-            Text = "Modificar Artículo";
+            foreach (var imagen in original.Imagenes) imagenes.Add(imagen.IdImagen);
+            Text = "Modificar artículo";
         }
-
-        private void btnGuardar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(txtCodigo.Text))
-                {
-                    MessageBox.Show("El campo codigo no puede estar vacio ");
-                    return;
-                }
-                if(string.IsNullOrWhiteSpace(txtNombre.Text))
-                {
-                    MessageBox.Show("El campo nombre no puede estar vacio");
-                    return;
-                }
-                if (nudPrecio.Value <=0)
-                {
-                    MessageBox.Show("El precio debe ser mayor a 0");
-                    return;
-                }
-
-
-                articulo.Codigo = txtCodigo.Text.Trim();
-                articulo.Nombre = txtNombre.Text.Trim();
-                articulo.Descripcion = txtDescripcion.Text;
-                articulo.Precio = nudPrecio.Value;
-                if (cboMarca.SelectedItem == null)
-                {
-                    MessageBox.Show("Debe seleccionar una marca.");
-                    return;
-                }
-                articulo.Marca = (Marca)cboMarca.SelectedItem;
-                if (cboCategoria.SelectedItem == null)
-                {
-                    MessageBox.Show("Debe seleccionar una categoría.");
-                    return;
-                }
-                articulo.Categoria = (Categoria)cboCategoria.SelectedItem;
-
-                // Conservamos las demás imágenes al editar la primera.
-                string direccion = txtURLImagen.Text.Trim();
-                if (direccion.Length > 0)
-                {
-                    bool esWeb = Uri.TryCreate(direccion, UriKind.Absolute, out Uri? uri)
-                        && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
-                    if (!esWeb && !File.Exists(direccion))
-                    {
-                        MessageBox.Show("Ingresá una URL http/https o seleccioná un archivo existente.");
-                        return;
-                    }
-                    if (!esWeb && direccion == archivoLocal)
-                    {
-                        string carpeta = ConfigurationManager.AppSettings["images-folder"]
-                            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CatalogoEquipo6", "Imagenes");
-                        Directory.CreateDirectory(carpeta);
-                        string destino = Path.Combine(carpeta, Guid.NewGuid() + Path.GetExtension(direccion));
-                        File.Copy(direccion, destino);
-                        direccion = destino;
-                        txtURLImagen.Text = destino;
-                        archivoLocal = null;
-                    }
-                    if (articulo.Imagenes.Count == 0)
-                        articulo.Imagenes.Add(new Imagen());
-                    articulo.Imagenes[0].IdImagen = direccion;
-                }
-                else if (articulo.Imagenes.Count > 0)
-                    articulo.Imagenes.RemoveAt(0);
-
-                ArticuloNegocio negocio = new ArticuloNegocio();
-
-                if (articulo.Id != 0)
-                {
-                    negocio.Modificar(articulo);
-                    MessageBox.Show("Modificado exitosamente");
-                }
-                else
-                {
-                    negocio.Agregar(articulo);
-                    MessageBox.Show("Agregado exitosamente");
-                }
-
-                DialogResult = DialogResult.OK;
-
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, "No se pudo completar la operación", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-
-            }
-        }
-
-
-
-
 
         private void frmArticuloAlta_Load(object sender, EventArgs e)
         {
             try
             {
-
-                MarcaNegocio negocio = new MarcaNegocio();
-                cboMarca.DataSource = negocio.Listar();
                 cboMarca.DisplayMember = "Descripcion";
                 cboMarca.ValueMember = "Id";
                 cboMarca.DropDownStyle = ComboBoxStyle.DropDownList;
-
-                CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
+                cboMarca.DataSource = new MarcaNegocio().Listar();
                 cboCategoria.DisplayMember = "descripcion";
                 cboCategoria.ValueMember = "Id";
-                cboCategoria.DataSource = categoriaNegocio.Listar();
-
+                cboCategoria.DataSource = new CategoriaNegocio().Listar();
+                txtCodigo.Text = articulo.Codigo;
+                txtNombre.Text = articulo.Nombre;
+                txtDescripcion.Text = articulo.Descripcion;
+                nudPrecio.Maximum = Math.Max(nudPrecio.Maximum, articulo.Precio);
+                nudPrecio.Minimum = Math.Min(nudPrecio.Minimum, articulo.Precio);
+                nudPrecio.Value = articulo.Precio;
                 if (articulo.Id != 0)
                 {
-                    txtCodigo.Text = articulo.Codigo;
-                    txtNombre.Text = articulo.Nombre;
-                    txtDescripcion.Text = articulo.Descripcion;
-                    nudPrecio.Maximum = Math.Max(nudPrecio.Maximum, articulo.Precio);
-                    nudPrecio.Minimum = Math.Min(nudPrecio.Minimum, articulo.Precio);
-                    nudPrecio.Value = articulo.Precio;
                     cboMarca.SelectedValue = articulo.Marca.Id;
                     cboCategoria.SelectedValue = articulo.Categoria.Id;
-                    txtURLImagen.Text = articulo.Imagenes.FirstOrDefault()?.IdImagen ?? string.Empty;
-                    cargarImagen(txtURLImagen.Text);
                 }
-
+                cargarImagen(lstImagenes.SelectedItem as string ?? "");
+                if (cboMarca.Items.Count == 0 || cboCategoria.Items.Count == 0)
+                    estadoImagen.Text = "Creá marcas y categorías antes de guardar.";
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, "No se pudo completar la operación", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-
+                btnGuardar.Enabled = false;
+                MostrarError(ex);
             }
+        }
+
+        private static bool EsWeb(string valor) => Uri.TryCreate(valor, UriKind.Absolute, out var uri)
+            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+
+        private void AgregarDireccion(string valor)
+        {
+            string direccion = valor.Trim();
+            if (direccion.Length == 0 || direccion.Length > 1000 || (!EsWeb(direccion) && !File.Exists(direccion)))
+                throw new ArgumentException("Ingresá una dirección http/https o un archivo existente (hasta 1000 caracteres).");
+            if (!imagenes.Contains(direccion)) imagenes.Add(direccion);
+            lstImagenes.SelectedItem = direccion;
+            txtURLImagen.Clear();
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            var copias = new List<string>();
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(txtURLImagen.Text)) AgregarDireccion(txtURLImagen.Text);
+                articulo.Codigo = txtCodigo.Text.Trim();
+                articulo.Nombre = txtNombre.Text.Trim();
+                articulo.Descripcion = txtDescripcion.Text.Trim();
+                articulo.Precio = nudPrecio.Value;
+                articulo.Marca = cboMarca.SelectedItem as Marca ?? throw new ArgumentException("Seleccioná una marca.");
+                articulo.Categoria = cboCategoria.SelectedItem as Categoria ?? throw new ArgumentException("Seleccioná una categoría.");
+                articulo.Imagenes = imagenes.Select(i => new Imagen { IdImagen = i }).ToList();
+                ArticuloNegocio.Validar(articulo);
+                // Copiamos archivos locales a una carpeta del usuario, no a la raíz de C:.
+                string carpeta = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CatalogoEquipo6", "Imagenes");
+                foreach (var imagen in articulo.Imagenes)
+                {
+                    if (EsWeb(imagen.IdImagen)) continue;
+                    if (!File.Exists(imagen.IdImagen)) throw new IOException("No se encuentra la imagen: " + imagen.IdImagen);
+                    string origen = Path.GetFullPath(imagen.IdImagen);
+                    if (origen.StartsWith(Path.GetFullPath(carpeta) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)) continue;
+                    Directory.CreateDirectory(carpeta);
+                    string destino = Path.Combine(carpeta, Guid.NewGuid().ToString("N") + Path.GetExtension(origen));
+                    File.Copy(origen, destino);
+                    copias.Add(destino);
+                    imagen.IdImagen = destino;
+                }
+                btnGuardar.Enabled = false;
+                var negocio = new ArticuloNegocio();
+                if (articulo.Id == 0) negocio.Agregar(articulo);
+                else negocio.Modificar(articulo);
+                // Desde aquí las copias pertenecen al registro confirmado.
+                copias.Clear();
+                MessageBox.Show(this, "Artículo guardado correctamente.", "Catálogo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DialogResult = DialogResult.OK;
+            }
+            catch (Exception ex)
+            {
+                foreach (string copia in copias)
+                    try { File.Delete(copia); } catch (IOException) { }
+                MostrarError(ex);
+            }
+            finally { btnGuardar.Enabled = true; }
         }
         private void txtUrlImagen_Leave(object sender, EventArgs e)
         {
-            cargarImagen(txtURLImagen.Text);
+            if (!string.IsNullOrWhiteSpace(txtURLImagen.Text)) cargarImagen(txtURLImagen.Text.Trim());
         }
-
-      
-                private void cargarImagen(string imagen)
-        {
-            try
-            {
-                pbxArticulo.Image?.Dispose();
-                pbxArticulo.Image = null;
-
-                if (string.IsNullOrWhiteSpace(imagen))
-                    return;
-
-                if (File.Exists(imagen))
-                {
-                    using var original = Image.FromFile(imagen);
-                    pbxArticulo.Image = new Bitmap(original);
-                }
-                else
-                {
-                    pbxArticulo.Load(imagen);
-                }
-            }
-            catch (Exception ex)
-            {
-                pbxArticulo.Image = null;
-
-                MessageBox.Show(
-                    ex.Message,
-                    "Error al cargar la imagen",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnCancelar_Click(Object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
+        private async void cargarImagen(string direccion) => await vistaImagen.Mostrar(direccion);
+        private void btnCancelar_Click(object sender, EventArgs e) => Close();
         private void btnAgregarImagen_Click(object sender, EventArgs e)
         {
-            using var archivo = new OpenFileDialog();
-            archivo.Filter = "Imágenes|*.jpg;*.jpeg;*.png";
-            if (archivo.ShowDialog() == DialogResult.OK)
-            {
-                archivoLocal = archivo.FileName;
-                txtURLImagen.Text = archivo.FileName;
-                cargarImagen(archivo.FileName);
-
-                //guardo la imagen
-                //File.Copy(archivo.FileName, ConfigurationManager.AppSettings["images-folder"] + archivo.SafeFileName);
-            }
+            using var archivo = new OpenFileDialog { Filter = "Imágenes|*.jpg;*.jpeg;*.png;*.gif;*.bmp", Multiselect = true };
+            if (archivo.ShowDialog(this) == DialogResult.OK)
+                Intentar(() => { foreach (string nombre in archivo.FileNames) AgregarDireccion(nombre); });
         }
+        private void Intentar(Action accion) { try { accion(); } catch (Exception ex) { MostrarError(ex); } }
+        private void MostrarError(Exception ex) => MessageBox.Show(this, ex.Message, "No se pudo completar la operación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 }
