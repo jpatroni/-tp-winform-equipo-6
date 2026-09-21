@@ -92,7 +92,27 @@ namespace TPWinForm_equipo_6.Negocio
 
             return datos.Lector.Read();
         }
+        public void Eliminar(int id)
+        {
+            if (EstaEnUso(id))
+            {
+                throw new Exception("No se puede eliminar la marca porque está siendo utilizada por un artículo.");
+            }
 
+            using var datos = new AccesoDatos();
+
+            datos.SetearConsulta("""
+        DELETE FROM MARCAS
+        WHERE Id = @id
+        """);
+
+            datos.SetearParametro(
+                "@id",
+                System.Data.SqlDbType.Int,
+                id);
+
+            datos.EjecutarAccion();
+        }
 
 
     } 
